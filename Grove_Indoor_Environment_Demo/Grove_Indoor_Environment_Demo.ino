@@ -7,6 +7,8 @@
 #include <string.h>
 #include <TH02_dev.h>
 
+#include <SPI.h>
+#include <SD.h>
 
 #define CMDSTR_MAX_LEN (128)
 #define LOW_TEMP       (10)
@@ -487,6 +489,8 @@ void loop()
   displayMenu();
   
   SerialRequestHandler();
+  
+  writeToSD();
    
   //if button pressed, backlight transforms
   if(isButtonPressed()) isBackLightOn = !isBackLightOn;
@@ -498,6 +502,29 @@ void loop()
   }
     
   
+}
+
+void writeToSD(){
+  int SD_PIN;
+  File myFile;
+  if (!SD.begin(SD_PIN)){
+    Serial.println("SD Initialization failed");
+    return;
+  }
+  myFile = SD.open("sensors.txt", FILE_WRITE);
+
+  if (!myFile){
+    Serial.println("Could not open file");
+    return;
+  }
+  Serial.println("The Sensors Value as follow:");
+  for(int i=0; i<SENSOR_COUNT;i++){
+    myFile.print(SerialVarList1[i]);
+    myFile.print(" = ");
+    myFile.println(getSensorValueList[i]());   
+  }
+  myFile.close();
+  Serial.println("Done writing to file");
 }
 
 int cmdstrInput(char *str){
