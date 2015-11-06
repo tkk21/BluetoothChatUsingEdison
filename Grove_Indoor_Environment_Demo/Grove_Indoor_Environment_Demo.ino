@@ -393,7 +393,8 @@ void setup()
   Serial.begin(9600);
     // set up the LCD's number of columns and rows:
     lcd.begin(16, 2);    
-    
+
+    SD_Init();
     WiFi_Init();
       
     pinMode(pinButton,INPUT);
@@ -500,24 +501,30 @@ void loop()
     status = WL_IDLE_STATUS;
     isSSIDreconfiged = false;
   }
+  
     
   
 }
 
-void writeToSD(){
-  int SD_PIN;
-  File myFile;
-  if (!SD.begin(SD_PIN)){
+void SD_Init(){
+  while(!Serial){
+    ;
+  }
+  pinMode(10, OUTPUT);
+  if (!SD.begin(4)){
     Serial.println("SD Initialization failed");
     return;
   }
+}
+
+void writeToSD(){
+  File myFile;
   myFile = SD.open("sensors.txt", FILE_WRITE);
 
   if (!myFile){
     Serial.println("Could not open file");
     return;
   }
-  Serial.println("The Sensors Value as follow:");
   for(int i=0; i<SENSOR_COUNT;i++){
     myFile.print(SerialVarList1[i]);
     myFile.print(" = ");
