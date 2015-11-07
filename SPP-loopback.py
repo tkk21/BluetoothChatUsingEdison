@@ -10,6 +10,8 @@ import uuid
 import dbus
 import dbus.service
 import dbus.mainloop.glib
+import mraa
+
 try:
   from gi.repository import GObject
 except ImportError:
@@ -62,6 +64,16 @@ class Profile(dbus.service.Object):
 			os.close(self.fd)
 			self.fd = -1
 
+	def GetSensorDataFromSD(self):
+		#temp/humi is on I2C
+		temp = mraa.I2c(64)
+		humi = mraa.I2c(64)
+		light = mraa.AIO(2) #light is A2
+		uv = mraa.AIO(3) #UV is A3
+		pir = mraa.Gpio(7) #PIR motion sensor is D7
+		ms = mraa.AIO(1) #moisture is A1
+
+		print();
 if __name__ == '__main__':
 	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
