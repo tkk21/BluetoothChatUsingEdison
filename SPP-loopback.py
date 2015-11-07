@@ -64,16 +64,39 @@ class Profile(dbus.service.Object):
 			os.close(self.fd)
 			self.fd = -1
 
-	def GetSensorDataFromSD(self):
-		#temp/humi is on I2C
-		temp = mraa.I2c(64)
-		humi = mraa.I2c(64)
-		light = mraa.AIO(2) #light is A2
-		uv = mraa.AIO(3) #UV is A3
-		pir = mraa.Gpio(7) #PIR motion sensor is D7
-		ms = mraa.AIO(1) #moisture is A1
+	def GetSensorData(self):
+		#temp,humi,light,uv,pir,ms
 
-		print();
+		#temp/humi is on I2C
+		temp = mraa.I2c(0)
+		temp.address(0x40)
+		#getting temperature
+		temp.writeReg(0x03, 0x11)
+		temp_value = temp.readWordReg(3)
+		temp_value = temp_value >> 2
+		temp_value = (temp_value/32.0)-50.0
+		#should be around temp=	20.0
+
+		humi = mraa.I2c(0)
+		humi.address(0x40)
+		humi.writeReg(0x03, 0x01)
+		humi_value = humi.readWordReg(3)
+		humi_value = humi_value >> 4
+		humi_value = (humi_value/16.0)-24.0
+		#should be around humi=60.0
+
+		light = mraa.Aio(2) #light is A2
+		ligh_value = light.read()
+		uv = mraa.Aio(3) #UV is A3
+		uv_value = uv.read()
+		pir = mraa.Gpio(7) #PIR motion sensor is D7
+		pir_value = pir.read()
+		ms = mraa.Aio(1) #moisture is A1
+		ms_value = ms.read()
+
+		#temprorary printing
+		print ("%f,%f,%f,%f,%f,%f" % (temp_value,humi_value,ligh_value,uv_value,pir_value,ms_value))
+
 if __name__ == '__main__':
 	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
