@@ -515,6 +515,23 @@ void SD_Init(){
     Serial.println("SD Initialization failed");
     return;
   }
+
+  File myFile = SD.open("sensors.txt", FILE_WRITE);
+  
+  if (!myFile){
+    Serial.println("Could not open file");
+    return;
+  }
+  for(int i=0; i<SENSOR_COUNT;i++){
+    myFile.print(SerialVarList1[i]);
+    if (i<SENSOR_COUNT -1){
+      myFile.print(",");  
+    }
+  }
+  myFile.println("");
+  myFile.close();
+  Serial.println("Done writing to file");
+
 }
 
 void writeToSD(){
@@ -526,10 +543,12 @@ void writeToSD(){
     return;
   }
   for(int i=0; i<SENSOR_COUNT;i++){
-    myFile.print(SerialVarList1[i]);
-    myFile.print(" = ");
-    myFile.println(getSensorValueList[i]());   
+    myFile.print(getSensorValueList[i]());
+    if (i<SENSOR_COUNT - 1){
+      myFile.print(",");
+    }
   }
+  myFile.println("");
   myFile.close();
   Serial.println("Done writing to file");
 
@@ -538,7 +557,7 @@ void writeToSD(){
 
 void readSD(){
   // re-open the file for reading:
-  myFile = SD.open("test.txt");
+  File myFile = SD.open("test.txt");
   if (myFile) {
     Serial.println("test.txt:");
     
