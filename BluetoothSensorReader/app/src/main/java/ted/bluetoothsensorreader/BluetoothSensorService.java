@@ -35,8 +35,17 @@ public class BluetoothSensorService {
 
     }
 
+    //free all the threads
     public synchronized void stop(){
-
+        Log.d(TAG, "STOP!");
+        if (mConnectThread != null){
+            mConnectThread.cancel();
+            mConnectThread = null;
+        }
+        if (mConnectedThread != null){
+            mConnectedThread.cancel();
+            mConnectedThread = null;
+        }
     }
 
     private class ConnectThread extends Thread{
