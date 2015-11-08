@@ -28,6 +28,7 @@ public class BluetoothSensorService {
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
     private int mState;
+    private SensorCSVWriter csvWriter = new SensorCSVWriter();
 
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
@@ -107,6 +108,7 @@ public class BluetoothSensorService {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
+        csvWriter.close();
     }
 
     public void write(String message){
@@ -216,10 +218,12 @@ public class BluetoothSensorService {
 
                     //TODO
                     //write to CSV
+                    csvWriter.writeLine(result);
                     Log.d(TAG, "Received data "+ result);
 
                 } catch (IOException e) {
                     Log.wtf(TAG, "disconnected during connected thread", e);
+                    csvWriter.close();
                     break;
                 }
             }
