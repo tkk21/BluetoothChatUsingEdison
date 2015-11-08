@@ -6,9 +6,11 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -28,7 +30,8 @@ public class BluetoothSensorService {
 
     }
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice device){
-
+        //make send button visible
+        mConnectedThread = new ConnectedThread(socket);
 
     }
 
@@ -89,14 +92,13 @@ public class BluetoothSensorService {
 
 
     private class ConnectedThread extends Thread{
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
+        private final BluetoothSocket connectedBluetoothSocket;
+        private final InputStream connectedInputStream;
+        private final OutputStream connectedOutputStream;
         private static final int MESSAGE_READ = 2;
 
-        public ConnectedThread(BluetoothSocket socket, String socketType) {
-            Log.d(TAG, "create ConnectedThread: " + socketType);
-            mmSocket = socket;
+        public ConnectedThread(BluetoothSocket socket) {
+            connectedBluetoothSocket = socket;
             InputStream tmpInStream = null;
             OutputStream tmpOutStream = null;
 
@@ -108,8 +110,8 @@ public class BluetoothSensorService {
                 Log.e(TAG, "temp sockets not created", e);
             }
 
-            mmInStream = tmpInStream;
-            mmOutStream = tmpOutStream;
+            connectedInputStream = tmpInStream;
+            connectedOutputStream = tmpOutStream;
         }
 
         public void run() {
@@ -120,12 +122,20 @@ public class BluetoothSensorService {
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
+                    bytes = connectedInputStream.read(buffer);
 
-                    // Send the obtained bytes to the UI Activity
+                    //convert from byte[] to string
+                    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    int size = byteArrayInputStream.available();
+                    byte[] decode = new byte[size];
+                    byteArrayInputStream.read(decode, 0, size);
+                    String result = new String(decode, StandardCharsets.UTF_8);
+
+                    //TODO
+                    //write to CSV
+
                 } catch (IOException e) {
-                    Log.e(TAG, "disconnected", e);
+                    Log.wtf(TAG, "disconnected during connected thread", e);
                     break;
                 }
             }
@@ -138,17 +148,17 @@ public class BluetoothSensorService {
          */
         public void write(byte[] buffer) {
             try {
-                mmOutStream.write(buffer);
+                connectedOutputStream.write(buffer);
             } catch (IOException e) {
-                Log.e(TAG, "Exception during write", e);
+                Log.wtf(TAG, "Failed to write", e);
             }
         }
 
         public void cancel() {
             try {
-                mmSocket.close();
+                connectedBluetoothSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "close() of connect socket failed", e);
+                Log.wtf(TAG, "Failed to close the connect socket failed", e);
             }
         }
     }
