@@ -11,6 +11,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import mraa
+import time
 
 try:
 	from gi.repository import GObject
@@ -49,6 +50,7 @@ class Profile(dbus.service.Object):
 				saved_data = data
 				while "start" == saved_data:
 					server_sock.send("looping back: %s\n" % getSensorData())
+					time.sleep(5)
 		except IOError:
 			pass
 
