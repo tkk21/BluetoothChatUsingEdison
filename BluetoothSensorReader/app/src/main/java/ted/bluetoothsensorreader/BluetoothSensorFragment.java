@@ -109,12 +109,9 @@ public class BluetoothSensorFragment extends Fragment {
         mReceiveSensorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                //send "start" to the server
             }
         });
-        //launch intent to pick the device to connect
-
         mBluetoothSensorService = new BluetoothSensorService(getActivity());
     }
 
@@ -130,7 +127,7 @@ public class BluetoothSensorFragment extends Fragment {
         String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mBluetoothSensorService.connect(device);
-
+        mReceiveSensorsButton.setVisibility(View.VISIBLE);
     }
 
 
