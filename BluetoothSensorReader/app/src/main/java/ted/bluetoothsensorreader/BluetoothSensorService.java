@@ -22,6 +22,13 @@ public class BluetoothSensorService {
 
     private final BluetoothAdapter mBluetoothAdapter;
 
+    // Constants that indicate the current connection state
+    public static final int STATE_NONE = 0;       // we're doing nothing
+    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
+    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
+    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
+    private int mState;
+
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
 
@@ -29,6 +36,45 @@ public class BluetoothSensorService {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     }
+
+    public synchronized void setState (int state){
+        Log.d(TAG, "turning state from " + mState +"to " +state);
+        mState = state;
+    }
+
+    public synchronized int getState (){
+        return mState;
+    }
+
+    /**
+     * This is called to start a bluetooth connection with another device
+     * @param device
+     */
+    public synchronized void connect (BluetoothDevice device){
+        Log.d(TAG, "Connecting to " + device);
+
+        if (mState == STATE_CONNECTING){
+            if (mConnectThread != null){
+                mConnectThread.cancel();
+                mConnectThread = null;
+            }
+        }
+        if (mConnectedThread != null){
+            mConnectedThread.cancel();
+            mConnectedThread = null;
+        }
+
+        mConnectThread = new ConnectThread(device);
+        mConnectThread.start();
+        setState(STATE_CONNECTING);
+    }
+
+    /**
+     * This is called to start managing the bluetooth connection
+     *
+     * @param socket
+     * @param device
+     */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice device){
         //make send button visible
         mConnectedThread = new ConnectedThread(socket);
