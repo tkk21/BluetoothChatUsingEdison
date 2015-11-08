@@ -92,7 +92,7 @@ public class BluetoothSensorService {
 
         mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
-        
+
         setState(STATE_CONNECTED);
     }
 
