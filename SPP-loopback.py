@@ -41,7 +41,7 @@ class Profile(dbus.service.Object):
 
 		server_sock = socket.fromfd(self.fd, socket.AF_UNIX, socket.SOCK_STREAM)
 		server_sock.setblocking(1)
-		server_sock.send("This is Edison SPP loopback test\nAll data will be loopback\nPlease start:\n")
+		#server_sock.send("This is Edison SPP loopback test\nAll data will be loopback\nPlease start:\n")
 
 		try:
 			while True:
