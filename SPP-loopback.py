@@ -13,50 +13,51 @@ import dbus.mainloop.glib
 import mraa
 
 try:
-  from gi.repository import GObject
+	from gi.repository import GObject
 except ImportError:
-  import gobject as GObject
+	import gobject as GObject
+
 
 class Profile(dbus.service.Object):
 	fd = -1
 
 	@dbus.service.method("org.bluez.Profile1",
-					in_signature="", out_signature="")
+						 in_signature="", out_signature="")
 	def Release(self):
 		print("Release")
 		mainloop.quit()
 
 	@dbus.service.method("org.bluez.Profile1",
-					in_signature="", out_signature="")
+						 in_signature="", out_signature="")
 	def Cancel(self):
 		print("Cancel")
 
 	@dbus.service.method("org.bluez.Profile1",
-				in_signature="oha{sv}", out_signature="")
+						 in_signature="oha{sv}", out_signature="")
 	def NewConnection(self, path, fd, properties):
 		self.fd = fd.take()
 		print("NewConnection(%s, %d)" % (path, self.fd))
-
 
 		server_sock = socket.fromfd(self.fd, socket.AF_UNIX, socket.SOCK_STREAM)
 		server_sock.setblocking(1)
 		server_sock.send("This is Edison SPP loopback test\nAll data will be loopback\nPlease start:\n")
 
 		try:
-		    while True:
-		        data = server_sock.recv(1024)
-		        print("received: %s" % data)
-			server_sock.send("looping back: %s\n" % data)
+			while True:
+				data = server_sock.recv(1024)
+				print("received: %s" % data)
+				saved_data = data
+				while "start" == saved_data:
+					server_sock.send("looping back: %s\n" % getSensorData())
 		except IOError:
-		    pass
+			pass
 
 		server_sock.close()
 		print("all done")
 
 
-
 	@dbus.service.method("org.bluez.Profile1",
-				in_signature="o", out_signature="")
+						 in_signature="o", out_signature="")
 	def RequestDisconnection(self, path):
 		print("RequestDisconnection(%s)" % (path))
 
@@ -64,38 +65,39 @@ class Profile(dbus.service.Object):
 			os.close(self.fd)
 			self.fd = -1
 
-	def GetSensorData(self):
-		#temp,humi,light,uv,pir,ms
 
-		#temp/humi is on I2C
-		temp = mraa.I2c(0)
-		temp.address(0x40)
-		#getting temperature
-		temp.writeReg(0x03, 0x11)
-		temp_value = temp.readWordReg(3)
-		temp_value = temp_value >> 2
-		temp_value = (temp_value/32.0)-50.0
-		#should be around temp=	20.0
+def getSensorData():
+	# temp,humi,light,uv,pir,ms
 
-		humi = mraa.I2c(0)
-		humi.address(0x40)
-		humi.writeReg(0x03, 0x01)
-		humi_value = humi.readWordReg(3)
-		humi_value = humi_value >> 4
-		humi_value = (humi_value/16.0)-24.0
-		#should be around humi=60.0
+	#temp/humi is on I2C
+	temp = mraa.I2c(0)
+	temp.address(0x40)
+	#getting temperature
+	temp.writeReg(0x03, 0x11)
+	temp_value = temp.readWordReg(3)
+	temp_value = temp_value >> 2
+	temp_value = (temp_value / 32.0) - 50.0
+	#should be around temp=	20.0
 
-		light = mraa.Aio(2) #light is A2
-		ligh_value = light.read()
-		uv = mraa.Aio(3) #UV is A3
-		uv_value = uv.read()
-		pir = mraa.Gpio(7) #PIR motion sensor is D7
-		pir_value = pir.read()
-		ms = mraa.Aio(1) #moisture is A1
-		ms_value = ms.read()
+	humi = mraa.I2c(0)
+	humi.address(0x40)
+	humi.writeReg(0x03, 0x01)
+	humi_value = humi.readWordReg(3)
+	humi_value = humi_value >> 4
+	humi_value = (humi_value / 16.0) - 24.0
+	#should be around humi=60.0
 
-		#temprorary printing
-		print ("%f,%f,%f,%f,%f,%f" % (temp_value,humi_value,ligh_value,uv_value,pir_value,ms_value))
+	light = mraa.Aio(2)  #light is A2
+	ligh_value = light.read()
+	uv = mraa.Aio(3)  #UV is A3
+	uv_value = uv.read()
+	pir = mraa.Gpio(7)  #PIR motion sensor is D7
+	pir_value = pir.read()
+	ms = mraa.Aio(1)  #moisture is A1
+	ms_value = ms.read()
+
+	return "%f,%f,%f,%f,%f,%f" % (temp_value, humi_value, ligh_value, uv_value, pir_value, ms_value)
+
 
 if __name__ == '__main__':
 	dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -103,13 +105,13 @@ if __name__ == '__main__':
 	bus = dbus.SystemBus()
 
 	manager = dbus.Interface(bus.get_object("org.bluez",
-				"/org/bluez"), "org.bluez.ProfileManager1")
+											"/org/bluez"), "org.bluez.ProfileManager1")
 
 	option_list = [
-			make_option("-C", "--channel", action="store",
+		make_option("-C", "--channel", action="store",
 					type="int", dest="channel",
 					default=None),
-			]
+	]
 
 	parser = OptionParser(option_list=option_list)
 
@@ -129,8 +131,8 @@ if __name__ == '__main__':
 	mainloop = GObject.MainLoop()
 
 	opts = {
-			"AutoConnect" :	options.auto_connect,
-		}
+		"AutoConnect": options.auto_connect,
+	}
 
 	if (options.name):
 		opts["Name"] = options.name
