@@ -4,6 +4,7 @@
 
     <string name="button_receive">Receive Sensor Data</string>
     <string name="button_connect">Connect to Device</string>
+    <string name="bluetooth_info">Press Connect to Device to set the device to connect to</string>
 
     <!-- DeviceListActivity -->
     <string name="scanning">Scanning for devices...</string>
