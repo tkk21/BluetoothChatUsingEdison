@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">BluetoothSensorReader</string>
-
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- DeviceListActivity -->
+    <string name="scanning">Scanning for devices...</string>
+    <string name="select_device">Select a device to connect to</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices were found</string>
+    
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Devices Available for Pairing</string>
+    <string name="button_scan">Scan for devices</string>
+
+
 </resources>
