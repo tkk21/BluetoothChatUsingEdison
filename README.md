@@ -1,1 +1,1 @@
-# BluetoothChatUsingEdison
+# BluetoothSensorUsingEdison
