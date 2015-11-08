@@ -125,11 +125,13 @@ public class BluetoothSensorService {
                     bytes = connectedInputStream.read(buffer);
 
                     //convert from byte[] to string
+                    //if that didn't work use BufferedReader
                     ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer);
                     int size = byteArrayInputStream.available();
                     byte[] decode = new byte[size];
                     byteArrayInputStream.read(decode, 0, size);
                     String result = new String(decode, StandardCharsets.UTF_8);
+
 
                     //TODO
                     //write to CSV
