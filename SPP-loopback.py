@@ -49,7 +49,7 @@ class Profile(dbus.service.Object):
 				print("received: %s" % data)
 				saved_data = data
 				while "start" == saved_data:
-					server_sock.send("looping back: %s\n" % getSensorData())
+					server_sock.send(getSensorData())
 					time.sleep(5)
 		except IOError:
 			pass
