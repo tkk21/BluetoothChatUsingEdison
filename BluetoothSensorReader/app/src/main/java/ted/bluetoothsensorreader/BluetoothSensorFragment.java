@@ -93,6 +93,7 @@ public class BluetoothSensorFragment extends Fragment {
     @Override
     public void onViewCreated (View view, @Nullable Bundle savedInstanceState){
         mReceiveSensorsButton = (Button)view.findViewById(R.id.button_receive);
+        mConnectDeviceButton = (Button)view.findViewById(R.id.button_connect);
     }
 
     private void initialize(){
