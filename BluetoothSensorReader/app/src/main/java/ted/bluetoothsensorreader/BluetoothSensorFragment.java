@@ -109,7 +109,7 @@ public class BluetoothSensorFragment extends Fragment {
         mReceiveSensorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //send "start" to the server
+                mBluetoothSensorService.write("start");
             }
         });
         mBluetoothSensorService = new BluetoothSensorService(getActivity());
