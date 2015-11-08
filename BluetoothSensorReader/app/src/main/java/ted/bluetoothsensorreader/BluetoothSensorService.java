@@ -76,9 +76,24 @@ public class BluetoothSensorService {
      * @param device
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice device){
-        //make send button visible
-        mConnectedThread = new ConnectedThread(socket);
+        Log.d(TAG, "connected to " + device);
+        //Optional make send button visible
 
+        //free the connect thread since we're already connected
+        if (mConnectThread != null){
+            mConnectThread.cancel();
+            mConnectThread = null;
+        }
+        //We are going to use the thread, so cancel that
+        if (mConnectedThread != null){
+            mConnectedThread.cancel();
+            mConnectedThread = null;
+        }
+
+        mConnectedThread = new ConnectedThread(socket);
+        mConnectedThread.start();
+        
+        setState(STATE_CONNECTED);
     }
 
     //free all the threads
