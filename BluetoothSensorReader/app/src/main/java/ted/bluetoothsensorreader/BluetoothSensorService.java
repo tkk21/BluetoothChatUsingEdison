@@ -216,6 +216,7 @@ public class BluetoothSensorService {
 
                     //TODO
                     //write to CSV
+                    Log.d(TAG, "Received data "+ result);
 
                 } catch (IOException e) {
                     Log.wtf(TAG, "disconnected during connected thread", e);
