@@ -109,6 +109,17 @@ public class BluetoothSensorService {
         }
     }
 
+    public void write(String message){
+        byte[] buffer = message.getBytes();
+
+        ConnectedThread thread;
+        synchronized (this){
+            if (mState != STATE_CONNECTED) return;
+            thread = mConnectedThread;
+        }
+        thread.write(buffer);
+    }
+
     private class ConnectThread extends Thread{
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
