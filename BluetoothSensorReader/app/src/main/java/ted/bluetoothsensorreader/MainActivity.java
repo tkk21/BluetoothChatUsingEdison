@@ -1,7 +1,7 @@
 package ted.bluetoothsensorreader;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentActivity;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,8 +14,10 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null){
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            BluetoothSensorFragment fragment = new BluetoothSensorFragment();
+            transaction.replace(R.id.fragment_output, fragment);
+            transaction.commit();
         }
     }
 
