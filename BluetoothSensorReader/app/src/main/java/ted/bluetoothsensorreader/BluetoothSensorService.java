@@ -26,9 +26,9 @@ public class BluetoothSensorService {
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
+    public static final int STATE_CONNECTING = 1; // now initiating an outgoing connection
+    public static final int STATE_CONNECTED = 2;  // now connected to a remote device
+
     private int mState;
     private SensorCSVWriter csvWriter = new SensorCSVWriter();
 
@@ -111,6 +111,7 @@ public class BluetoothSensorService {
             mConnectedThread = null;
         }
         csvWriter.close();
+        setState(STATE_NONE);
     }
 
     public void write(String message){
