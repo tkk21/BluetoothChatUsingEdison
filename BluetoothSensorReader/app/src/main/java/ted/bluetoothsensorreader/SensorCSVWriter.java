@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class SensorCSVWriter {
     private static final String TAG = "SensorCSVWriter";
-    private static final String attributeLine = "temp,humi,light,uv,pir,moist";
+    private static final String attributeLine = "TimeStamp,temp,humi,light,uv,pir,moist";
     private final String filename;
     private BufferedWriter bufferedWriter;
 

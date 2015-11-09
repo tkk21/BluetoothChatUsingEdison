@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -216,9 +218,9 @@ public class BluetoothSensorService {
                     String result = new String(decode, StandardCharsets.UTF_8);
 
 
-                    //TODO
                     //write to CSV
-                    csvWriter.writeLine(result);
+                    String timestamp = DateFormat.getTimeInstance().format((new Date()));
+                    csvWriter.writeLine(timestamp + ","+result);
                     Log.d(TAG, "Received data "+ result);
 
                 } catch (IOException e) {
