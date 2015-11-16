@@ -14,6 +14,21 @@
         android:layout_height="wrap_content"
         android:text="@string/button_connect"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please write the command to send to the Edison Server.\n
+         The format expected is yyyymmdd.\n
+          Then the Edison Server will send sensor data from yyyymmdd to yesterday.\n
+          If you send start, the Edison Server will send the current sensor data line by line."
+        android:visibility="gone"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="start"
+        android:visibility="gone"
+        />
     <Button
         android:id="@+id/button_receive"
         android:layout_width="match_parent"
