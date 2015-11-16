@@ -3,7 +3,11 @@ package ted.bluetoothsensorreader;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,9 +34,11 @@ public class BluetoothSensorFragment extends Fragment {
     //Layout views
     private Button mConnectDeviceButton;
     private Button mReceiveSensorsButton;
-
     private TextView mInstructionText;
     private EditText mCommandEditText;
+
+    private LocationManager locationManager;
+    private Location lastLocation;
 
 
     /**
@@ -54,6 +60,31 @@ public class BluetoothSensorFragment extends Fragment {
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
         }
+
+        locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                lastLocation = location;
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
+        lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
     @Override
