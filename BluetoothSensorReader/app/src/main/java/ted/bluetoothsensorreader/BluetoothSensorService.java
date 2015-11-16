@@ -226,7 +226,7 @@ public class BluetoothSensorService {
                     byte[] decode = new byte[size];
                     byteArrayInputStream.read(decode, 0, size);
                     String result = new String(decode, StandardCharsets.UTF_8);
-
+                    Log.d(TAG, "isFileTransferMode: " + isFileTransferMode);
                     if (isFileTransferMode){
                         RadonSensorCSVWriter.writeCSV(result, homeLocation.getLatitude(), homeLocation.getLongitude());
                     }
