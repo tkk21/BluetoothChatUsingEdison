@@ -149,9 +149,10 @@ public class BluetoothSensorFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mBluetoothSensorService.write(mCommandEditText.getText().toString());
+
             }
         });
-        mBluetoothSensorService = new BluetoothSensorService(getActivity());
+        mBluetoothSensorService = new BluetoothSensorService(getActivity(), lastLocation);
     }
 
     @Override
@@ -170,9 +171,4 @@ public class BluetoothSensorFragment extends Fragment {
         mInstructionText.setVisibility(View.VISIBLE);
         mCommandEditText.setVisibility(View.VISIBLE);
     }
-
-
-
-
-
 }

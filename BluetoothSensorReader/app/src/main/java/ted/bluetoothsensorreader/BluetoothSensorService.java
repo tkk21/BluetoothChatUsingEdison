@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import java.io.ByteArrayInputStream;
@@ -34,10 +35,11 @@ public class BluetoothSensorService {
 
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private Location homeLocation;
 
-    public BluetoothSensorService(Context context){
+    public BluetoothSensorService(Context context, Location location){
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
+        this.homeLocation = location;
     }
 
     public synchronized void setState (int state){
