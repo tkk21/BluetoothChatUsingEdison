@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -26,8 +28,12 @@ public class BluetoothSensorFragment extends Fragment {
     private static final int REQUEST_ENABLE_BT = 3;
 
     //Layout views
-    private Button mReceiveSensorsButton;
     private Button mConnectDeviceButton;
+    private Button mReceiveSensorsButton;
+
+    private TextView mInstructionText;
+    private EditText mCommandEditText;
+
 
     /**
      * Local bluetooth adapter
@@ -94,6 +100,8 @@ public class BluetoothSensorFragment extends Fragment {
     public void onViewCreated (View view, @Nullable Bundle savedInstanceState){
         mReceiveSensorsButton = (Button)view.findViewById(R.id.button_receive);
         mConnectDeviceButton = (Button)view.findViewById(R.id.button_connect);
+        mInstructionText = (TextView)view.findViewById(R.id.textView_instruction);
+        mCommandEditText = (EditText)view.findViewById(R.id.editText_command);
     }
 
     private void initialize(){
@@ -109,7 +117,7 @@ public class BluetoothSensorFragment extends Fragment {
         mReceiveSensorsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mBluetoothSensorService.write("start");
+                mBluetoothSensorService.write(mCommandEditText.getText().toString());
             }
         });
         mBluetoothSensorService = new BluetoothSensorService(getActivity());
@@ -128,6 +136,8 @@ public class BluetoothSensorFragment extends Fragment {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mBluetoothSensorService.connect(device);
         mReceiveSensorsButton.setVisibility(View.VISIBLE);
+        mInstructionText.setVisibility(View.VISIBLE);
+        mCommandEditText.setVisibility(View.VISIBLE);
     }
 
 
