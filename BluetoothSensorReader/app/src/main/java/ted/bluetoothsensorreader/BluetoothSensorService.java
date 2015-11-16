@@ -36,10 +36,12 @@ public class BluetoothSensorService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private Location homeLocation;
+    private boolean isFileTransferMode;
 
     public BluetoothSensorService(Context context, Location location){
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.homeLocation = location;
+        isFileTransferMode = false;
     }
 
     public synchronized void setState (int state){
@@ -116,14 +118,19 @@ public class BluetoothSensorService {
         setState(STATE_NONE);
     }
 
-    public void write(String message){
+    public synchronized void write(String message){
+        if (message.equals("start")){
+            isFileTransferMode = false;
+        }
+        else{
+            isFileTransferMode = true;
+        }
         byte[] buffer = message.getBytes();
 
         ConnectedThread thread;
-        synchronized (this){
-            if (mState != STATE_CONNECTED) return;
-            thread = mConnectedThread;
-        }
+        if (mState != STATE_CONNECTED) return;
+        thread = mConnectedThread;
+
         thread.write(buffer);
     }
 
@@ -220,12 +227,15 @@ public class BluetoothSensorService {
                     byteArrayInputStream.read(decode, 0, size);
                     String result = new String(decode, StandardCharsets.UTF_8);
 
-
-                    //write to CSV
-                    String timestamp = DateFormat.getTimeInstance().format((new Date()));
-                    csvWriter.writeLine(timestamp + ","+result);
+                    if (isFileTransferMode){
+                        RadonSensorCSVWriter.writeCSV(result, homeLocation.getLatitude(), homeLocation.getLongitude());
+                    }
+                    else{
+                        //write to CSV
+                        String timestamp = DateFormat.getTimeInstance().format((new Date()));
+                        csvWriter.writeLine(timestamp + "," + result);
+                    }
                     Log.d(TAG, "Received data "+ result);
-
                 } catch (IOException e) {
                     Log.wtf(TAG, "disconnected during connected thread", e);
                     csvWriter.close();
