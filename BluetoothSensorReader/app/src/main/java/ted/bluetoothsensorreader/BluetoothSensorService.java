@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.location.Location;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,12 +41,16 @@ public class BluetoothSensorService {
     private boolean isFileTransferMode;
     private Context callingContext;
 
+    //Handler used to make toast inside threads
+    private Handler toastHandler;
+    private int i = 0;
 
     public BluetoothSensorService(Context context, Location location){
         this.callingContext = context;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.homeLocation = location;
         isFileTransferMode = false;
+        toastHandler = new Handler();
     }
 
     public synchronized void setState (int state){
@@ -238,7 +243,12 @@ public class BluetoothSensorService {
                     if (isFileTransferMode){
                         //writes radon data to CSV
                         RadonSensorCSVWriter.writeCSV(result, homeLocation.getLatitude(), homeLocation.getLongitude());
-                        Toast.makeText(callingContext, "Finished receiving data from Edison", Toast.LENGTH_SHORT).show();
+                        toastHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(callingContext, String.format("Finished receiving data from Edison: %d", i), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                     else{
                         //write to CSV
@@ -248,7 +258,14 @@ public class BluetoothSensorService {
                     Log.d(TAG, "Received data " + result);
                 } catch (IOException e) {
                     Log.wtf(TAG, "disconnected during connected thread", e);
+                    toastHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(callingContext, "Edison ended the connection", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     csvWriter.close();
+                    BluetoothSensorService.this.stop();
                     break;
                 }
             }
