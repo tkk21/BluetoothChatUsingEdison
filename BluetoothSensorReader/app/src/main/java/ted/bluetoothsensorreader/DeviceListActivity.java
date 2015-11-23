@@ -68,6 +68,11 @@ public class DeviceListActivity extends Activity {
         populatePairedDevicesArrayAdapter(pairedDevicesArrayAdapter);
     }
 
+    /**
+     * fill up the array adapter with devices previously paired
+     * indicate it's empty otherwise
+     * @param pairedDevicesArrayAdapter
+     */
     private void populatePairedDevicesArrayAdapter(ArrayAdapter<String> pairedDevicesArrayAdapter) {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         // Add paired devices to the array adapter
@@ -83,6 +88,10 @@ public class DeviceListActivity extends Activity {
         }
     }
 
+    /**
+     * Initializes the list views and adds click listeners
+     * @param pairedDevicesArrayAdapter
+     */
     private void setupListViews(ArrayAdapter<String> pairedDevicesArrayAdapter) {
         // Set up the ListView for paired devices
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
