@@ -38,7 +38,7 @@ public class SensorCSVWriter {
             bufferedWriter.close();
         }
         catch (IOException e){
-            Log.wtf(TAG, "IOException", e);
+            Log.wtf(TAG, "IOException Failed to close", e);
         }
     }
 
