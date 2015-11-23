@@ -29,7 +29,8 @@ public class BluetoothSensorFragment extends Fragment {
     private static final String TAG = "BluetoothSensorFragment";
 
     // Intent request codes
-    private static final int REQUEST_ENABLE_BT = 3;
+    private static final int REQUEST_CONNECT_TO_DEVICE = 0;
+    private static final int REQUEST_ENABLE_BT = 1;
 
     //Layout views
     private Button mConnectDeviceButton;
@@ -141,7 +142,7 @@ public class BluetoothSensorFragment extends Fragment {
             @Override
             public void onClick(View v){
                 Intent intent = new Intent(getActivity(), DeviceListActivity.class);
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent, REQUEST_CONNECT_TO_DEVICE);
 
             }
         });
@@ -157,8 +158,21 @@ public class BluetoothSensorFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (resultCode == Activity.RESULT_OK) {
-            connectToDevice(data);
+        switch (requestCode){
+            case REQUEST_ENABLE_BT:
+                if (resultCode == Activity.RESULT_OK){
+                    initialize();
+                }
+                else{
+                    Toast.makeText(BluetoothSensorFragment.this.getContext(), "User did not turn on the bluetooth, cannot proceed", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                }
+                break;
+            case REQUEST_CONNECT_TO_DEVICE:
+                if (resultCode == Activity.RESULT_OK) {
+                    connectToDevice(data);
+                }
+                break;
         }
     }
 
