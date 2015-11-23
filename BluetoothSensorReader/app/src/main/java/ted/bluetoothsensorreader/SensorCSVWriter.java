@@ -8,9 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * Created by ted on 11/7/2015.
- */
+
 public class SensorCSVWriter {
     private static final String TAG = "SensorCSVWriter";
     private static final String attributeLine = "TimeStamp,temp,humi,light,uv,pir,moist";
@@ -21,6 +19,10 @@ public class SensorCSVWriter {
         filename = "EdisonSensor.csv";
     }
 
+    /**
+     * writes a single line of csv
+     * @param data
+     */
     public void writeLine(String data){
         initialize();
         try{
@@ -33,6 +35,9 @@ public class SensorCSVWriter {
         }
     }
 
+    /**
+     * closes the writer
+     */
     public void close(){
         try{
             bufferedWriter.close();
@@ -42,6 +47,12 @@ public class SensorCSVWriter {
         }
     }
 
+    /**
+     * Initializes the csv writer
+     *
+     * doesn't do anything if it's already initialized
+     * writer intialized as append mode
+     */
     private void initialize(){
         if (bufferedWriter != null){
             return;
