@@ -38,8 +38,8 @@ public class BluetoothSensorService {
     private ConnectedThread mConnectedThread;
     private Location homeLocation;
     private boolean isFileTransferMode;
-
     private Context callingContext;
+
 
     public BluetoothSensorService(Context context, Location location){
         this.callingContext = context;
@@ -122,6 +122,10 @@ public class BluetoothSensorService {
         setState(STATE_NONE);
     }
 
+    /**
+     * writes the message to the server
+     * @param message
+     */
     public synchronized void write(String message){
         if (message.equals("start")){
             isFileTransferMode = false;
@@ -232,6 +236,7 @@ public class BluetoothSensorService {
                     String result = new String(decode, StandardCharsets.UTF_8);
                     Log.d(TAG, "isFileTransferMode: " + isFileTransferMode);
                     if (isFileTransferMode){
+                        //writes radon data to CSV
                         RadonSensorCSVWriter.writeCSV(result, homeLocation.getLatitude(), homeLocation.getLongitude());
                         Toast.makeText(callingContext, "Finished receiving data from Edison", Toast.LENGTH_SHORT).show();
                     }
