@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ted on 11/16/2015.
- */
 public class RadonSensorCSVWriter {
 
     private static final String TAG = "CSVWriter";
@@ -22,7 +19,7 @@ public class RadonSensorCSVWriter {
 
 
     /**
-     *
+     * writes the csv using the opencsv library
      * @param streamContents
      * @param latitude
      * @param longitude
