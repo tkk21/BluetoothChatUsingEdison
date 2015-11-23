@@ -89,7 +89,9 @@ public class RadonSensorCSVWriter {
     }
 
     /**
+     * @deprecated
      * old write CSV implementation using plain text
+     * don't use!
      * @param streamContents
      * @param latitude
      * @param longitude
