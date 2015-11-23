@@ -38,13 +38,11 @@ public class BluetoothSensorFragment extends Fragment {
     private TextView mInstructionText;
     private EditText mCommandEditText;
 
+    //Location related fields
     private LocationManager locationManager;
     private Location lastLocation;
 
-
-    /**
-     * Local bluetooth adapter
-     */
+    //Local bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothSensorService mBluetoothSensorService;
 
@@ -62,13 +60,16 @@ public class BluetoothSensorFragment extends Fragment {
             activity.finish();
         }
 
+        // Initialize Location Manager
         locationManager = (LocationManager) this.getActivity().getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
+            // update location on location changed
             @Override
             public void onLocationChanged(Location location) {
                 lastLocation = location;
             }
 
+            // Don't care about the other listeners
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
 
@@ -84,6 +85,7 @@ public class BluetoothSensorFragment extends Fragment {
 
             }
         };
+        // Ask the location manager for last location
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,locationListener);
         lastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
@@ -91,7 +93,8 @@ public class BluetoothSensorFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
+        // If the bluetooth is not enabled, ask the user to enable it
+        // this fragment will be initialized later in onActivityResult
         if (!mBluetoothAdapter.isEnabled()){
             Intent enableIntent = new Intent (BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
@@ -104,21 +107,9 @@ public class BluetoothSensorFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        // Makes sure to stop the service once this fragment is destroyed
         if (mBluetoothSensorService != null){
             mBluetoothSensorService.stop();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //Covering edge case when app was paused before being able to onStart()
-
-        //TODO might not need
-        if (mBluetoothSensorService != null){
-            if (mBluetoothSensorService.getState() == BluetoothSensorService.STATE_NONE){
-                //mBluetoothSensorService.start();
-            }
         }
     }
 
@@ -128,16 +119,21 @@ public class BluetoothSensorFragment extends Fragment {
         return inflater.inflate(R.layout.activity_bluetooth_sensor_fragment, container, false);
     }
 
+
     @Override
     public void onViewCreated (View view, @Nullable Bundle savedInstanceState){
+        // get all the buttons and texts to be able to use them in this fragment
         mReceiveSensorsButton = (Button)view.findViewById(R.id.button_receive);
         mConnectDeviceButton = (Button)view.findViewById(R.id.button_connect);
         mInstructionText = (TextView)view.findViewById(R.id.textView_instruction);
         mCommandEditText = (EditText)view.findViewById(R.id.editText_command);
     }
 
+    /**
+     * adds click listeners to the buttons
+     * and starts the bluetooth sensor service
+     */
     private void initialize(){
-        //initialize stuff
         mConnectDeviceButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -153,6 +149,7 @@ public class BluetoothSensorFragment extends Fragment {
 
             }
         });
+        // start the service and pass along the location
         mBluetoothSensorService = new BluetoothSensorService(getActivity(), lastLocation);
     }
 
@@ -176,7 +173,11 @@ public class BluetoothSensorFragment extends Fragment {
         }
     }
 
-
+    /**
+     * connects to the device selected by the user
+     * then makes views related to communicating with the device visible
+     * @param data
+     */
     private void connectToDevice(Intent data){
         String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
