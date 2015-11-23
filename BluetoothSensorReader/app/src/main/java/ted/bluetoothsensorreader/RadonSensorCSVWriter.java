@@ -48,7 +48,6 @@ public class RadonSensorCSVWriter {
             Log.wtf(TAG, "IOException", e);
         }
         Log.d(TAG, String.format("File is at: %s", file.getAbsolutePath()));
-        //todo toast
     }
 
     /**
@@ -65,6 +64,7 @@ public class RadonSensorCSVWriter {
             int lengthWithoutNewLine = line.length()-1;
             if (lengthWithoutNewLine>0) {
                 String[] originalLine = line.split(",");
+                // Not enough data, most likely corrupted stream
                 if (originalLine.length < 6){
                     continue;
                 }
