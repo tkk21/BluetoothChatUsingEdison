@@ -14,6 +14,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null){
+            //adds the bluetooth sensor fragment to the activity here
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             BluetoothSensorFragment fragment = new BluetoothSensorFragment();
             transaction.replace(R.id.fragment_output, fragment);
