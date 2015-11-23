@@ -28,9 +28,9 @@ public class RadonSensorCSVWriter {
         String [] splitContents = streamContents.split("\n");
         List<String[]> csvContent = new ArrayList<String[]>();
 
-        String filename= splitContents[0].substring(0, 8);
+        String filename= "" + latitude + "," + longitude + ".csv";
         String root = Environment.getExternalStorageDirectory().toString();
-        File csvDir = new File(root + "/IntelEdisonRadon");
+        File csvDir = new File(root + "/DCIM/IntelEdisonRadon");
         csvDir.mkdir();
         File file = new File (csvDir, filename);
         boolean exists = file.exists();
@@ -48,6 +48,7 @@ public class RadonSensorCSVWriter {
             Log.wtf(TAG, "IOException", e);
         }
         Log.d(TAG, String.format("File is at: %s", file.getAbsolutePath()));
+        //todo toast
     }
 
     /**
@@ -64,6 +65,9 @@ public class RadonSensorCSVWriter {
             int lengthWithoutNewLine = line.length()-1;
             if (lengthWithoutNewLine>0) {
                 String[] originalLine = line.split(",");
+                if (originalLine.length < 6){
+                    continue;
+                }
                 String[] newLine = new String[originalLine.length+2];
                 copyStringArr(newLine, originalLine);
                 newLine[newLine.length-2] = ""+latitude;
