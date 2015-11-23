@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -38,7 +39,10 @@ public class BluetoothSensorService {
     private Location homeLocation;
     private boolean isFileTransferMode;
 
+    private Context callingContext;
+
     public BluetoothSensorService(Context context, Location location){
+        this.callingContext = context;
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.homeLocation = location;
         isFileTransferMode = false;
@@ -229,13 +233,14 @@ public class BluetoothSensorService {
                     Log.d(TAG, "isFileTransferMode: " + isFileTransferMode);
                     if (isFileTransferMode){
                         RadonSensorCSVWriter.writeCSV(result, homeLocation.getLatitude(), homeLocation.getLongitude());
+                        Toast.makeText(callingContext, "Finished receiving data from Edison", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         //write to CSV
                         String timestamp = DateFormat.getTimeInstance().format((new Date()));
                         csvWriter.writeLine(timestamp + "," + result);
                     }
-                    Log.d(TAG, "Received data "+ result);
+                    Log.d(TAG, "Received data " + result);
                 } catch (IOException e) {
                     Log.wtf(TAG, "disconnected during connected thread", e);
                     csvWriter.close();
